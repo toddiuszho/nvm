@@ -2423,9 +2423,22 @@ nvm() {
         nvm_err "wget: not found"
       fi
 
-      for tool in git grep awk sed cut basename rm mkdir xargs; do
+      for tool in git; do
         if nvm_has "${tool}"; then
           nvm_err "${tool}: $(nvm_command_info ${tool}), $(command ${tool} --version | command head -n 1)"
+        else
+          nvm_err "${tool}: not found"
+        fi
+      done
+
+      for gnu_tool in grep awk sed cut basename rm mkdir xargs; do
+        if nvm_has "${gnu_tool}"; then
+          gnu_path="${gnu_tool}"
+          gnu_local_path="/usr/local/bin/g${gnu_tool}"
+          if [ -e "${gnu_local_path}" ] && [ -f "${gnu_local_path}" ] && [ -x "${gnu_local_path}" ]; then
+            gnu_path="${gnu_local_path}"
+          fi
+          nvm_err "${gnu_tool}: $(nvm_command_info ${gnu_tool}), $(command ${gnu_path} --version | command head -n 1)"
         else
           nvm_err "${tool}: not found"
         fi
